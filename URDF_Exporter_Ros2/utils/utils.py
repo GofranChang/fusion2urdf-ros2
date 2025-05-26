@@ -9,9 +9,24 @@ import adsk, adsk.core, adsk.fusion
 import os.path, re
 from xml.etree import ElementTree
 from xml.dom import minidom
-from distutils.dir_util import copy_tree
+# from distutils.dir_util import copy_tree
+import shutil
 import fileinput
 import sys
+
+def copy_tree(src, dst):
+    if not os.path.exists(src):
+        raise ValueError(f"Source path not exists: {src}")
+    
+    for root, dirs, files in os.walk(src):
+        rel_path = os.path.relpath(root, src)
+        dst_path = os.path.join(dst, rel_path)
+        os.makedirs(dst_path, exist_ok=True)
+
+        for file in files:
+            src_file = os.path.join(root, file)
+            dst_file = os.path.join(dst_path, file)
+            shutil.copy2(src_file, dst_file)  # copy2 保留元数据
 
 def copy_occs(root):
     """
